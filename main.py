@@ -1,5 +1,17 @@
 # GDYNIA = Location(float(54,5189), float(18,5319))
 
+# Repetetive functions
+
+def try_float(message):
+    input_check = False
+    while not input_check:
+        try:
+            user_input = float(input(f"{message}").replace(",","."))
+            return user_input
+        except ValueError:
+            print("Błąd. Spróbuj ponownie")
+
+
 from datetime import datetime, timedelta
 
 available_locations = []
@@ -8,16 +20,17 @@ TODAY = datetime.now().date()
 TOMORROW = TODAY + timedelta(days=1)
 
 class Location:
-    def __init__(self, latitude, longitude):
+    def __init__(self, name, latitude, longitude):
+        self.name = name
         self.latitude = latitude
         self.longitude = longitude
 
 def add_new_city():
-    city_name = input("Podaj nazwę miasta: ").upper
-    city_latitude = float(input("Podaj szerokość geograficzną: "))
-    city_longitude = float(input("Podaj długość geograficzną: "))
-    city_name = city_name.Location(city_latitude, city_longitude)
-    available_locations.append(city_name)    
+    location_name = input("Podaj nazwę miasta: ").upper()
+    location_latitude = try_float("Podaj szerokość geograficzną: ")
+    location_longitude = try_float("Podaj długość geograficzną: ")
+    location = Location(location_name, location_latitude, location_longitude)
+    available_locations.append(location)    
 
 def get_date():
     date_correct = False
@@ -36,5 +49,6 @@ def get_date():
 
 #RUN APP
 print(f"Dostępny lokacje: {available_locations}")
+add_new_city()
 date = get_date()
 print(date)
