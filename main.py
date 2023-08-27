@@ -11,6 +11,7 @@ def try_float(message):
         except ValueError:
             print("Błąd. Spróbuj ponownie")
 
+# Base Code
 
 from datetime import datetime, timedelta
 
@@ -19,14 +20,25 @@ available_locations = {}
 TODAY = datetime.now().date()
 TOMORROW = TODAY + timedelta(days=1)
 
-def add_new_city():
-    location_name = input("Podaj nazwę miasta: ").upper()
+
+def add_new_city(location_name):
     location_latitude = try_float("Podaj szerokość geograficzną: ")
     location_longitude = try_float("Podaj długość geograficzną: ")
     available_locations[location_name] = {
         "latitude": location_latitude,
         "longitude": location_longitude
     }
+
+def select_location():
+    print(f"Dostępne lokacje: {available_locations}")
+    location_name = input("Podaj nazwę miasta: ").upper()
+    if location_name not in available_locations:
+        print("Nie wykryto miasta.")
+        add_new_city(location_name)
+    latitude = available_locations[location_name].get("latitude")
+    longitude = available_locations[location_name].get("longitude")
+    return latitude, longitude
+    
 
 def get_date():
     date_correct = False
@@ -44,8 +56,7 @@ def get_date():
     
 
 #RUN APP
-print(f"Dostępny lokacje: {available_locations}")
-add_new_city()
+latitude, longitude = select_location()
 date = get_date()
 print(date)
 print(available_locations)
