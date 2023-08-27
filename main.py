@@ -42,7 +42,12 @@ def add_new_city(location_name):
 
 def select_location():
     print_available_locations()
-    location_name = input("Podaj nazwę miasta: ").upper()
+    location_name = None
+    while not location_name:
+        location_name = input("Podaj nazwę miasta: ").upper()
+        if len(location_name) == 0:
+            print("Błąd. Spróbuj ponownie")
+            location_name = None
     if location_name not in available_locations:
         print("Nie wykryto miasta.")
         add_new_city(location_name)
@@ -65,18 +70,36 @@ def get_date():
         except ValueError:
             print("Niepoprawny format daty.\n Spróbuj ponownie")
 
-def get_rain_data(url, user_latitude, user_longitude, user_date):
-    rain_data = requests.get(url.format(latitude = user_latitude, longitude = user_longitude, searched_date = user_date))
-    if rain_data.status_code == 200:
-        print(rain_data)
+def get_api_data(url, user_latitude, user_longitude, user_date):
+    api_data = requests.get(url.format(latitude = user_latitude, longitude = user_longitude, searched_date = user_date))
+    if api_data.status_code == 200:
+        api_data = json.loads(api_data.text)
+        return api_data
     else:
         print("Bład wczytywania danych.")
+        return False
+    
+def get_rain_data(api_data):
+    if not api_data:
+        pass
+    else:
+        rain_sum = api_data["daily"].get("rain_sum")[0]
+        try:
+            rain_sum = float(rain_sum)
+            if rain_sum > 0:
+                print("Będzie padać")
+            elif rain_sum == 0:
+                print("Nie będzie padać")
+            else:
+                print("Nie wiem")
+        except ValueError:
+            print("Nie wiem")
     
 
 #RUN APP
 latitude, longitude = select_location()
 searched_date = get_date()
-print(searched_date)
-print(available_locations)
 URL = "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=rain&daily=rain_sum&timezone=Europe%2FLondon&start_date={searched_date}&end_date={searched_date}"
-get_rain_data(URL, latitude, longitude, searched_date)
+api_data =  get_api_data(URL, latitude, longitude, searched_date)
+get_rain_data(api_data)
+
