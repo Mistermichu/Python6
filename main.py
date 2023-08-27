@@ -19,6 +19,7 @@ def print_available_locations():
 # Base Code
 
 import requests
+import json
 from datetime import datetime, timedelta
 
 available_locations = {
@@ -64,22 +65,18 @@ def get_date():
         except ValueError:
             print("Niepoprawny format daty.\n Spróbuj ponownie")
 
-def get_rain_data(url, params):
-    rain_data = requests.get(url, params=params)
+def get_rain_data(url, user_latitude, user_longitude, user_date):
+    rain_data = requests.get(url.format(latitude = user_latitude, longitude = user_longitude, searched_date = user_date))
     if rain_data.status_code == 200:
-        rain_sum = rain_data["daily"]["rain_sum"]
-        print(rain_sum)
+        print(rain_data)
     else:
         print("Bład wczytywania danych.")
     
 
 #RUN APP
 latitude, longitude = select_location()
-date = get_date()
-print(date)
+searched_date = get_date()
+print(searched_date)
 print(available_locations)
-URL = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=rain&daily=rain_sum&timezone=Europe%2FLondon&start_date={date}&end_date={date}"
-params = {
-    "daily": "rain_sum"
-}
-get_rain_data(URL, params)
+URL = "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=rain&daily=rain_sum&timezone=Europe%2FLondon&start_date={searched_date}&end_date={searched_date}"
+get_rain_data(URL, latitude, longitude, searched_date)
