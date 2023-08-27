@@ -1,5 +1,3 @@
-# GDYNIA = Location(float(54,5189), float(18,5319))
-
 # Repetetive functions
 
 def try_float(message):
@@ -11,15 +9,27 @@ def try_float(message):
         except ValueError:
             print("Błąd. Spróbuj ponownie")
 
+def print_available_locations():
+    location_name_list = []
+    for location_name, data in available_locations.items():
+        location_name_list.append(location_name)
+    print(f"Dostępne lokacje: {location_name_list}")
+
+
 # Base Code
 
+import requests
 from datetime import datetime, timedelta
 
-available_locations = {}
+available_locations = {
+    "GDYNIA": {
+        "latitude": 54.5189,
+        "longitude": 18.5319
+    }
+}
 
 TODAY = datetime.now().date()
 TOMORROW = TODAY + timedelta(days=1)
-
 
 def add_new_city(location_name):
     location_latitude = try_float("Podaj szerokość geograficzną: ")
@@ -30,7 +40,7 @@ def add_new_city(location_name):
     }
 
 def select_location():
-    print(f"Dostępne lokacje: {available_locations}")
+    print_available_locations()
     location_name = input("Podaj nazwę miasta: ").upper()
     if location_name not in available_locations:
         print("Nie wykryto miasta.")
@@ -53,6 +63,14 @@ def get_date():
             return date
         except ValueError:
             print("Niepoprawny format daty.\n Spróbuj ponownie")
+
+def get_rain_data(url, params):
+    rain_data = requests.get(url, params=params)
+    if rain_data.status_code == 200:
+        rain_sum = rain_data["daily"]["rain_sum"]
+        print(rain_sum)
+    else:
+        print("Bład wczytywania danych.")
     
 
 #RUN APP
@@ -60,3 +78,8 @@ latitude, longitude = select_location()
 date = get_date()
 print(date)
 print(available_locations)
+URL = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=rain&daily=rain_sum&timezone=Europe%2FLondon&start_date={date}&end_date={date}"
+params = {
+    "daily": "rain_sum"
+}
+get_rain_data(URL, params)
