@@ -14,23 +14,19 @@ def try_float(message):
 
 from datetime import datetime, timedelta
 
-available_locations = []
+available_locations = {}
 
 TODAY = datetime.now().date()
 TOMORROW = TODAY + timedelta(days=1)
-
-class Location:
-    def __init__(self, name, latitude, longitude):
-        self.name = name
-        self.latitude = latitude
-        self.longitude = longitude
 
 def add_new_city():
     location_name = input("Podaj nazwę miasta: ").upper()
     location_latitude = try_float("Podaj szerokość geograficzną: ")
     location_longitude = try_float("Podaj długość geograficzną: ")
-    location = Location(location_name, location_latitude, location_longitude)
-    available_locations.append(location)    
+    available_locations[location_name] = {
+        "latitude": location_latitude,
+        "longitude": location_longitude
+    }
 
 def get_date():
     date_correct = False
@@ -52,3 +48,4 @@ print(f"Dostępny lokacje: {available_locations}")
 add_new_city()
 date = get_date()
 print(date)
+print(available_locations)
